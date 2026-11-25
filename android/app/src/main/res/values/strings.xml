@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Laplace paso a paso</string>
+    <string name="title_activity_main">Laplace paso a paso</string>
+    <string name="package_name">mx.udg.cutonala.laplace</string>
+    <string name="custom_url_scheme">mx.udg.cutonala.laplace</string>
+</resources>

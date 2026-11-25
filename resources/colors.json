@@ -1,0 +1,15 @@
+{
+  "light": {
+    "primary": "#0051df",
+    "onPrimary": "#ffffff",
+    "primaryContainer": "#dbe1ff",
+    "surface": "#faf8ff",
+    "surfaceContainer": "#ecedfb",
+    "onSurface": "#191b25"
+  },
+  "dark": {
+    "primary": "#b5c4ff",
+    "surface": "#10131c",
+    "surfaceContainer": "#1d1f29"
+  }
+}

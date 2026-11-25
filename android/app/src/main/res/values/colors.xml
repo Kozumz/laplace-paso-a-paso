@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Paleta Material 3 (esquema Vibrant, semilla #3F6AE0), igual que public/css/theme.css -->
+<resources>
+    <color name="md_primary">#0051DF</color>
+    <color name="md_surface">#FAF8FF</color>
+    <color name="md_surface_container">#ECEDFB</color>
+    <color name="splash_bg">#FAF8FF</color>
+</resources>

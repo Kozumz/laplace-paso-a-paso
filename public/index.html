@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Laplace paso a paso</title>
+<meta name="description" content="Resolvedor paso a paso de transformada de Laplace: sistemas mecánicos rotacionales, circuitos de dos mallas, RLC e inversas, con explicaciones sin tecnicismos.">
+<meta name="theme-color" content="#ecedfb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1d1f29" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="img/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="img/icon-192.png">
+<link rel="stylesheet" href="css/styles.css">
+<script src="vendor/katex.min.js" defer></script>
+<script src="js/lp-core.js" defer></script>
+<script src="js/ejercicios.js" defer></script>
+<script src="js/app.js" defer></script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><div class="logo" aria-hidden="true">ℒ</div><div><h1>Laplace paso a paso</h1><span>Transformada de Laplace interactiva</span></div></div>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#conceptos" data-view="conceptos"><span class="pill"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3 1 9l11 6 9-4.91V17h2V9L12 3z"/></svg></span>Conceptos</a>
+      <a href="#resolver" data-view="resolver"><span class="pill"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5.97 4.06L14.09 6l1.41 1.41L16.91 6l1.06 1.06-1.41 1.41 1.41 1.41-1.06 1.06-1.41-1.4-1.41 1.41-1.06-1.06 1.41-1.41-1.41-1.42zm-6.78.66h5v1.5h-5v-1.5zM11.5 16h-2v2H8v-2H6v-1.5h2v-2h1.5v2h2V16zm6.5 1.25h-5v-1.5h5v1.5zm0-2.5h-5v-1.5h5v1.5z"/></svg></span>Resolver</a>
+      <a href="#ejercicios" data-view="ejercicios"><span class="pill"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></span>Ejemplos</a>
+    </nav>
+    <button id="theme" class="icon-btn" type="button" aria-label="Cambiar entre tema claro y oscuro" title="Tema claro / oscuro">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ================= RESOLVER ================= -->
+<section id="view-resolver" hidden>
+  <div class="solver">
+    <aside class="panel controls" aria-label="Datos del problema">
+      <label class="field-label" for="model">Tipo de problema</label>
+      <select id="model" class="model"></select>
+      <div id="presets-wrap" class="group">
+        <div class="group-title">Cargar un ejemplo</div>
+        <div id="presets" class="presets"></div>
+      </div>
+      <div id="fields"></div>
+      <div class="hr"></div>
+      <label class="toggle" for="practice"><span><b style="font-weight:500">Modo práctica</b><br><span class="note">Oculta los pasos y la respuesta</span></span><input type="checkbox" id="practice" class="switch" role="switch"></label>
+      <p class="note" style="margin-top:12px">Cambia cualquier número y todo se recalcula al momento.</p>
+    </aside>
+    <div class="output">
+      <div id="ex-banner" class="panel ex-banner" hidden></div>
+      <div class="panel diagram"><div id="diagram"></div><div id="diagram-cap" class="cap"></div></div>
+      <div id="steps" class="output"></div>
+      <div id="answer"></div>
+      <div id="practice-bar" class="practice-bar" hidden><button id="next-step" class="fab" type="button"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>Siguiente paso</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONCEPTOS ================= -->
+<section id="view-conceptos" hidden>
+  <h2>Todo lo que necesitas saber, sin tecnicismos</h2>
+  <p class="lead">Todos estos problemas siguen el mismo camino. Apréndelo una vez y solo cambian los números.</p>
+  <nav class="toc" aria-label="Temas">
+    <a href="#c-mapa">El camino</a><a href="#c-traductor">Traductor</a><a href="#c-tabla">La tabla 2×2</a><a href="#c-det">Determinantes</a>
+    <a href="#c-polos">Polos</a><a href="#c-tachar">Tachar</a><a href="#c-fracciones">Fracciones</a><a href="#c-inversas">Regresar al tiempo</a>
+    <a href="#c-chequeos">Chequeos</a><a href="#c-calc">Calculadora</a><a href="#c-errores">Errores comunes</a>
+  </nav>
+  <div class="concepts" style="margin-top:16px">
+
+    <article class="panel card" id="c-mapa">
+      <span class="chip blue">El camino</span>
+      <h3 style="margin-top:8px">Cinco paradas, siempre las mismas</h3>
+      <div class="flow">
+        <div class="stop"><b>1. El dibujo</b><span>Cilindros, resortes y amortiguadores (o resistencias, bobinas y capacitores).</span></div>
+        <div class="stop"><b>2. Una tabla 2×2</b><span>Cada pieza se vuelve un número, algo con s o algo con s².</span></div>
+        <div class="stop"><b>3. Una fracción</b><span>Con determinantes sacas θ/T: algo arriba entre algo abajo.</span></div>
+        <div class="stop"><b>4. Fracciones chiquitas</b><span>Los polos te dicen en cuántos pedazos se parte.</span></div>
+        <div class="stop"><b>5. La respuesta</b><span>Cada pedazo se vuelve una e, un cos o un sen. Se suman.</span></div>
+      </div>
+      <p>La letra <b>s</b> es solo una letra. La tratas como la x de la secundaria: se suma, se multiplica y se factoriza igual. Al final la cambias por funciones de <b>t</b> (el tiempo) con una tabla corta.</p>
+    </article>
+
+    <article class="panel card" id="c-traductor">
+      <span class="chip blue">Traductor</span>
+      <h3 style="margin-top:8px">Qué se escribe por cada pieza</h3>
+      <div class="two">
+        <div class="tbl"><table>
+          <thead><tr><th>Pieza mecánica</th><th>Unidad</th><th>Se escribe</th></tr></thead>
+          <tbody>
+            <tr><td>Cilindro (inercia) J</td><td class="mono">kg·m²</td><td data-tex="Js^2"></td></tr>
+            <tr><td>Amortiguador D</td><td class="mono">N·m·s/rad</td><td data-tex="Ds"></td></tr>
+            <tr><td>Resorte K</td><td class="mono">N·m/rad</td><td data-tex="K"></td></tr>
+            <tr><td>Par T(t)</td><td class="mono">N·m</td><td>T(s), del lado derecho</td></tr>
+          </tbody></table></div>
+        <div class="tbl"><table>
+          <thead><tr><th>Pieza eléctrica</th><th>Se escribe</th><th>Se parece a</th></tr></thead>
+          <tbody>
+            <tr><td>Resistencia R</td><td data-tex="R"></td><td>resorte</td></tr>
+            <tr><td>Bobina L</td><td data-tex="Ls"></td><td>amortiguador</td></tr>
+            <tr><td>Capacitor (k s⁻¹)</td><td data-tex="\frac{k}{s}"></td><td>(no hay)</td></tr>
+            <tr><td>Fuente V(t)</td><td>V(s), del lado derecho</td><td>par T</td></tr>
+          </tbody></table></div>
+      </div>
+      <p class="note">Truco para no confundirte: <b>J siempre con s²</b>, <b>D siempre con s</b>, <b>K siempre solo</b>. La unidad lo delata: si dice "·s", lleva s.</p>
+    </article>
+
+    <article class="panel card" id="c-tabla">
+      <span class="chip blue">La tabla 2×2</span>
+      <h3 style="margin-top:8px">Una fila por cada cosa que gira (o por cada malla)</h3>
+      <ul class="clean">
+        <li><b>Diagonal:</b> en la fila de θ1 sumas <b>todo lo que toca a θ1</b>: su cilindro, sus piezas a la pared y las piezas que lo unen con θ2. Igual para θ2.</li>
+        <li><b>Fuera de la diagonal:</b> lo que está <b>entre</b> θ1 y θ2 (lo compartido), siempre con signo menos.</li>
+        <li><b>Lado derecho:</b> T en la fila del cilindro donde está la flecha del par; 0 en la otra.</li>
+        <li>Si θ2 es un <b>punto sin cilindro</b>, su fila simplemente no lleva s².</li>
+      </ul>
+      <div class="math" data-tex="\begin{bmatrix} \text{todo lo de }\theta_1 & -\text{compartido} \\ -\text{compartido} & \text{todo lo de }\theta_2 \end{bmatrix}\begin{bmatrix}\theta_1\\ \theta_2\end{bmatrix}=\begin{bmatrix}T\\ 0\end{bmatrix}" data-block="1"></div>
+    </article>
+
+    <article class="panel card" id="c-det">
+      <span class="chip black">Determinantes</span>
+      <h3 style="margin-top:8px">Diagonal menos cruzada</h3>
+      <p>Un determinante 2×2 es: lo de la diagonal principal multiplicado, <b>menos</b> lo de la cruzada multiplicado.</p>
+      <div class="math" data-tex="\begin{vmatrix} a & b \\ c & d \end{vmatrix} = a\cdot d - b\cdot c" data-block="1"></div>
+      <p>Para despejar θ: <b>arriba</b> va la tabla con la columna de la incógnita cambiada por el lado derecho; <b>abajo</b> va la tabla normal. No tienes que memorizarlo, solo esta tabla:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>El par T está en</th><th>Piden</th><th>Arriba queda</th></tr></thead>
+        <tbody>
+          <tr><td>θ1</td><td>θ1</td><td>fila de θ2</td></tr>
+          <tr><td>θ1</td><td>θ2</td><td>lo compartido</td></tr>
+          <tr><td>θ2</td><td>θ2</td><td>fila de θ1</td></tr>
+          <tr><td>θ2</td><td>θ1</td><td>lo compartido</td></tr>
+        </tbody></table></div>
+      <p>Abajo siempre queda: <span data-tex="(\text{fila }1)(\text{fila }2)-(\text{compartido})^2"></span>. Multiplica con calma y compruébalo poniendo s = 1 en las dos versiones.</p>
+    </article>
+
+    <article class="panel card" id="c-polos">
+      <span class="chip green">Polos</span>
+      <h3 style="margin-top:8px">Los números que hacen cero lo de abajo</h3>
+      <p>Eso es todo: un <b>polo</b> es un número que, si lo pones en lugar de s, hace cero lo de abajo de la fracción. Son las "raíces" que saca la calculadora (en MATLAB, <span class="mono">pole(sys)</span>).</p>
+      <p>Sirven para saber, <b>antes de hacer cuentas</b>, qué pedazos va a tener tu respuesta. Cada polo trae su pedazo:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>El polo es…</th><th>Ejemplo</th><th>Pedazo en la respuesta</th><th>Cómo se ve</th></tr></thead>
+        <tbody>
+          <tr><td>Cero</td><td class="mono">0</td><td>un número solo</td><td>se queda fijo</td></tr>
+          <tr><td>Negativo, sin i</td><td class="mono">−2</td><td data-tex="A\,e^{-2t}"></td><td>se apaga</td></tr>
+          <tr><td>Par con i, parte real negativa</td><td class="mono">−1 ± 2i</td><td data-tex="e^{-t}\cos(2t),\ e^{-t}\operatorname{sen}(2t)"></td><td>va y viene mientras se apaga</td></tr>
+          <tr><td>Positivo</td><td class="mono">+0.3</td><td data-tex="A\,e^{0.3t}"></td><td>crece sin parar (sistema inestable)</td></tr>
+          <tr><td>Repetido</td><td class="mono">−1, −1</td><td data-tex="A\,e^{-t}+B\,t\,e^{-t}"></td><td>se apaga, con una t</td></tr>
+        </tbody></table></div>
+      <p><b>Pruébalo:</b> toca o arrastra en el plano de la izquierda para poner un polo y mira qué forma da.</p>
+      <div class="explorer">
+        <div><svg id="splane" class="splane" viewBox="0 0 320 240" role="img" aria-label="Plano para colocar un polo"></svg>
+          <div class="presets" style="margin-top:8px">
+            <button class="btn" type="button" data-pole="0,0">Polo en 0</button>
+            <button class="btn" type="button" data-pole="-1.5,0">Polo −1.5</button>
+            <button class="btn" type="button" data-pole="-0.5,2">Par −0.5 ± 2i</button>
+            <button class="btn" type="button" data-pole="0,2">Par 0 ± 2i</button>
+            <button class="btn" type="button" data-pole="0.3,0">Polo +0.3</button>
+          </div></div>
+        <div><div id="pole-verdict" class="verdict"></div><div id="pole-term" class="math"></div><svg id="pole-plot" viewBox="0 0 320 180" role="img" aria-label="Forma del pedazo en el tiempo"></svg>
+          <p class="note">Mientras más a la izquierda está el polo, más rápido se apaga su pedazo. Mientras más arriba (más grande el número con i), más rápido va y viene.</p></div>
+      </div>
+    </article>
+
+    <article class="panel card" id="c-tachar">
+      <span class="chip black">Tachar</span>
+      <h3 style="margin-top:8px">Si un paréntesis está arriba y abajo, se va</h3>
+      <p>Antes de partir en fracciones, revisa si algún número hace cero <b>arriba y abajo</b> al mismo tiempo. Si sí, ese paréntesis se tacha y ese polo ya no cuenta. Dos ejemplos:</p>
+      <ul class="clean">
+        <li>Arriba s, abajo s(3s² + 10s + 6). Se tacha la s. Si no la tachas, a su letra le sale 0.</li>
+        <li>Arriba 2s + 1 = 2(s + 0.5) y abajo también hay (s + 0.5). Se tacha.</li>
+      </ul>
+    </article>
+
+    <article class="panel card" id="c-fracciones">
+      <span class="chip green">Fracciones</span>
+      <h3 style="margin-top:8px">Partir en fracciones chiquitas</h3>
+      <p>Una letra por cada polo sin i; dos letras (Cs + D) por cada par con i:</p>
+      <div class="math" data-block="1" data-tex="\frac{N(s)}{s\,(s+p)(s^2+bs+c)}=\frac{A}{s}+\frac{B}{s+p}+\frac{Cs+D}{s^2+bs+c}"></div>
+      <p><b>Tapar el paréntesis</b> (para los polos sin i): para sacar B, tapa (s + p) con el dedo y pon s = −p en todo lo que queda. El número que sale es B.</p>
+      <p><b>Para C y D</b> (el par con i) arma la tabla de coeficientes y resuélvela en la calculadora: cada letra se multiplica por los paréntesis que no tiene abajo, se acomodan los números por potencias y se resuelve el sistema. En el resolvedor esa tabla aparece ya armada en cada problema.</p>
+    </article>
+
+    <article class="panel card" id="c-inversas">
+      <span class="chip green">Regresar al tiempo</span>
+      <h3 style="margin-top:8px">La tabla corta (lo único que se memoriza)</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Lo que ves</th><th>Se convierte en</th></tr></thead>
+        <tbody>
+          <tr><td data-tex="\frac{A}{s}"></td><td data-tex="A"></td></tr>
+          <tr><td data-tex="\frac{A}{s+p}"></td><td data-tex="A\,e^{-pt}"></td></tr>
+          <tr><td data-tex="\frac{A}{(s+p)^2}"></td><td data-tex="A\,t\,e^{-pt}"></td></tr>
+          <tr><td data-tex="\frac{Cs+D}{s^2+bs+c}"></td><td data-tex="C\,e^{-at}\cos(\omega t)+\frac{D-Ca}{\omega}\,e^{-at}\operatorname{sen}(\omega t)"></td></tr>
+        </tbody></table></div>
+      <p>Para el par con i: <span data-tex="a=\tfrac{b}{2}"></span> y <span data-tex="\omega=\sqrt{c-a^2}"></span>. Son la mitad del número de en medio y la raíz de lo que sobra, igual que al completar el cuadrado. Si sacaste un número afuera al principio (como 1/2), al final multiplica <b>cada</b> pedazo por él.</p>
+    </article>
+
+    <article class="panel card" id="c-chequeos">
+      <span class="chip red">Chequeos</span>
+      <h3 style="margin-top:8px">Cómo saber si te quedó bien</h3>
+      <ul class="clean">
+        <li><b>En t = 0.</b> Si abajo hay al menos 2 potencias más que arriba (lo normal aquí), tu respuesta en t = 0 debe dar <b>0</b>. Suma los números de las e y las C de los cosenos.</li>
+        <li><b>El número solo.</b> Si hay un polo en 0, tu respuesta termina en un número fijo. Si a la pared solo hay un amortiguador y ningún resorte, ese número es 1 entre ese amortiguador.</li>
+        <li><b>Lo de abajo.</b> Pon s = 1 en (fila 1)(fila 2) − compartido² y en tu resultado desarrollado. Deben dar igual.</li>
+        <li><b>Multiplica de regreso.</b> Tus fracciones, juntas otra vez, deben dar lo de arriba original.</li>
+      </ul>
+    </article>
+
+    <article class="panel card" id="c-calc">
+      <span class="chip blue">Calculadora</span>
+      <h3 style="margin-top:8px">Lo que hace la calculadora por ti</h3>
+      <p><b>Polos:</b> en la Casio fx-991EX: MENU → Ecuación/Func → Polinomio, eliges el grado y metes los números de abajo de la potencia más alta a la más baja. Te da las raíces una por una con "=". La fx-991EX llega a grado 3 y la fx-991CW a grado 4. Si abajo hay una s de factor común, sácala primero y el grado baja uno.</p>
+      <p><b>Letras A, B, C, D:</b> MENU → Ecuación/Func → Ecuaciones simultáneas, número de incógnitas, y metes la tabla de coeficientes fila por fila. El menú puede variar un poco según tu modelo.</p>
+    </article>
+
+    <article class="panel card" id="c-errores">
+      <span class="chip red">Errores comunes</span>
+      <h3 style="margin-top:8px">Los errores más comunes</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Error</th><th>Cómo evitarlo</th></tr></thead>
+        <tbody>
+          <tr><td>Columna del lado derecho corrida</td><td>Escribe arriba de cada número a qué potencia pertenece. Si arriba hay 2s + 1, es 0, 0, 2, 1.</td></tr>
+          <tr><td>Signo del paréntesis de un par con i</td><td>Si la raíz empieza con menos, el paréntesis lleva + en medio.</td></tr>
+          <tr><td>Usar b en vez de b/2</td><td>a siempre es la mitad del número de en medio.</td></tr>
+          <tr><td>Perder A o B al regresar al tiempo</td><td>El número de arriba de cada fracción se queda pegado a su e.</td></tr>
+          <tr><td>Olvidar el número que se sacó afuera</td><td>Multiplica cada pedazo por él al final; revisa con t = 0.</td></tr>
+          <tr><td>Poner lo compartido con +</td><td>Fuera de la diagonal siempre va con menos.</td></tr>
+        </tbody></table></div>
+    </article>
+  </div>
+</section>
+
+<!-- ================= EJERCICIOS ================= -->
+<section id="view-ejercicios" hidden>
+  <h2>Ejemplos</h2>
+  <p class="lead">Elige un ejemplo. "Practicar" lo abre con los pasos ocultos: resuélvelo en papel y destapa un paso a la vez para comparar. "Ver resuelto" lo abre completo. Después cambia los números en el resolvedor para crear tus propios problemas.</p>
+  <div id="ex-list"></div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span>Laplace paso a paso · Carlos Josué Moreno Mireles</span>
+    <span id="status"><span class="dot"></span>Comprobando…</span>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="md_primary">#B5C4FF</color>
+    <color name="md_surface">#10131C</color>
+    <color name="md_surface_container">#1D1F29</color>
+    <color name="splash_bg">#10131C</color>
+</resources>

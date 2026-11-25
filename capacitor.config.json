@@ -1,0 +1,15 @@
+{
+  "appId": "mx.udg.cutonala.laplace",
+  "appName": "Laplace paso a paso",
+  "webDir": "public",
+  "android": {
+    "backgroundColor": "#faf8ff"
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "css",
+      "initialViewportFitValueHint": "cover",
+      "style": "DEFAULT"
+    }
+  }
+}
